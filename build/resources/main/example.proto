@@ -1,0 +1,7 @@
+syntax = "proto3";
+package com.example.grpc.proto;
+
+message ExampleMessage {
+  string id = 1;
+  string name = 2;
+}
