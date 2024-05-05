@@ -1,5 +1,6 @@
 package com.example.grpc.service
 
+import com.example.grpc.models.Example
 import com.example.grpc.proto.Example.ExampleMessage
 import com.example.grpc.repository.ExampleRepository
 import org.springframework.stereotype.Service
@@ -11,9 +12,16 @@ class ExampleService(
     private val exampleRepository: ExampleRepository,
 ) {
 
-    fun getExample(@PathVariable id: String) : Mono<ExampleMessage> {
-        val exampleMessage = ExampleMessage.newBuilder().setId(id).setName("name").build()
-        return Mono.just(exampleMessage)
+    fun getExample(id: String) : Mono<ExampleMessage> {
+        return exampleRepository.findById(id).flatMap {
+            Mono.just(ExampleMessage.newBuilder().setId(it.id).setName(it.name).build())
+        }
     }
 
+    fun createExample(id: String, name: String): Mono<ExampleMessage> {
+        return exampleRepository.save(Example(id, name))
+            .flatMap {
+                Mono.just(ExampleMessage.newBuilder().setId(it.id).setName(it.name).build())
+            }
+    }
 }
